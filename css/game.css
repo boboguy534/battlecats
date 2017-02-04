@@ -3,6 +3,7 @@
 	height:500px;
 	background-color:#88aaff;
 	position:relative;
+	overflow:hidden;
 }
 
 .cat {

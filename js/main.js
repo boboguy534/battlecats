@@ -1,46 +1,69 @@
 
-Cat = function(x, y, id) {
-	this.elem = $("#"+id);
-	this.elem.css({"top":x+"px", "left":y+"px"});
+Cat = function(config) {
+	this.defaults = {
+		"speed": 30
+	};
+
+	config = $.extend({}, this.defaults, config);
+
+	this.elem = $("#"+config.id);
+	this.keys = config.keys;
+	this.speed = config.speed;
+	this.moveTo(config.x, config.y);
 }
-
-Cat.prototype.move = function(dx, dy) {
-	this.elem.animate({"top":"+="+dy+"px", "left":"+="+dx+"px"}, 10);
-}
-
-
-$("#game").ready(function() {
-	var cat1 = new Cat(50, 100, "cat-1");
-	var cat2 = new Cat(350, 100, "cat-2");
-	$(this).on("keydown", function(event) {
-		var speed = 30;
-		switch(event.key) {
-			case "w":
-				cat1.move(0,-speed);
+$.extend(Cat.prototype, {
+	handleKeyboardEvent: function(event) {
+		switch(event.which) {
+			case this.keys.up:
+				this.move(0, -this.speed);
 				break;
-			case "s":
-				cat1.move(0,speed);
+			case this.keys.down:
+				this.move(0, this.speed);
 				break;
-			case "a":
-				cat1.move(-speed,0);
+			case this.keys.left:
+				this.move(-this.speed, 0);
 				break;
-			case "d":
-				cat1.move(speed,0);
+			case this.keys.right:
+				this.move(this.speed, 0);
 				break;
 		}
-		switch(event.which) {
-			case 38:
-				cat2.move(0,-speed);
-				break;
-			case 40:
-				cat2.move(0,speed);
-				break;
-			case 37:
-				cat2.move(-speed,0);
-				break;
-			case 39:
-				cat2.move(speed,0);
-				break;
+	},
+	moveTo: function(x, y) {
+		this.elem.css({"top":y+"px", "left":x+"px"});
+	},
+	move: function(dx, dy) {
+		this.elem.animate({"top":"+="+dy+"px", "left":"+="+dx+"px"}, 10);
+	}
+});
+
+$("#game").ready(function() {
+	var cats = [
+		new Cat({
+			id: "cat-1",
+			x: 50,
+			y: 100,
+			keys: { // wasd
+				up: 87,
+				down: 83,
+				left: 65,
+				right: 68
+			}
+		}),
+		new Cat({
+			id: "cat-2",
+			x: 350,
+			y: 100,
+			keys: { // up down left right
+				up: 38,
+				down: 40,
+				left: 37,
+				right: 39
+			}
+		})
+	];
+	$(this).on("keydown", function(event) {
+		for(i = 0; i < 2; i++) {
+			cats[i].handleKeyboardEvent(event);
 		}
 	});
 });
